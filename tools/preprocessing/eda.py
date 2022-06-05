@@ -10,9 +10,10 @@ def test():
 
 class Dataset:
     """ """
-    def __init__(self, features, features_ohe):
+    def __init__(self, features, features_ohe, y):
         self.features = features
         self.features_ohe = features_ohe
+        self.y = y
         self.df = self.get_original()
         # self.df_transformed = self.get_transformed()
 
@@ -21,7 +22,13 @@ class Dataset:
         return f"Data transformation class. \
         \n---------------------------\
         \nInputted features: {self.features}. \
-        \nFeatures encoded: {self.features_ohe}."
+        \nInputted features: {self.features_ohe}. \
+        \nVariable to be clustered: {self.y}. \
+        \n---------------------------\
+        \nTransformation steps: \
+        \n1. Correct data types \
+        \n2. One Hot Encoding of {self.features_ohe} \
+        "
 
     @staticmethod
     def get_original():
@@ -41,8 +48,9 @@ class Dataset:
         return df_new
 
     def _get_features(self):
+        assert set(self.features_ohe).issubset(set(self.features)), \
+            "`features_ohe` to be OHE must be a part of `features`."
         # subset of df with only necessary features
-        assert set(self.features_ohe).issubset(set(self.features)), "`features_ohe` to be OHE must be a part of `features`."
         self.df = self.df[self.features]
         self.df = self._ohe(self.features_ohe)
         return self.df
