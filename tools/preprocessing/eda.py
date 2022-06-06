@@ -10,10 +10,9 @@ def test():
 
 class Dataset:
     """ """
-    def __init__(self, features, features_ohe, y):
+    def __init__(self, features, features_ohe):
         self.features = features
         self.features_ohe = features_ohe
-        self.y = y
         self.df = self.get_original()
         # self.df_transformed = self.get_transformed()
 
@@ -23,7 +22,6 @@ class Dataset:
         \n---------------------------\
         \nInputted features: {self.features}. \
         \nInputted features: {self.features_ohe}. \
-        \nVariable to be clustered: {self.y}. \
         \n---------------------------\
         \nTransformation steps: \
         \n1. Correct data types \
@@ -42,10 +40,16 @@ class Dataset:
         return self.df
 
     def _correct_types(self):
-        df_new = self.df.copy()
-        df_new['CustomerID'] = df_new['CustomerID'].astype('Int64')
-        df_new['InvoiceDate'] = pd.to_datetime(df_new['InvoiceDate'], errors='coerce').dt.date
-        return df_new
+        # df_new = self.df.copy()
+
+        self.df['CustomerID'] = self.df['CustomerID'].astype('Int64')
+
+        self.df['InvoiceYear'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.year
+        self.df['InvoiceMonth'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.month
+        self.df['InvoiceDay'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.day
+        self.features.remove('InvoiceDate')
+        self.features.extend(['InvoiceYear', 'InvoiceMonth', 'InvoiceDay'])
+        return self.df
 
     def _get_features(self):
         assert set(self.features_ohe).issubset(set(self.features)), \
@@ -68,11 +72,12 @@ class Dataset:
         pd.DataFrame - pd.dataframe with one-hot-encoded features.
 
         """
-        for colname in cols:
-            # get df of dummies from a column, where "prefix_" is name of the column the dummy comes from
-            dummies = pd.get_dummies(self.df[colname]).add_prefix(f"{colname}_")
-            # append dummies to df
-            self.df = pd.concat([self.df, dummies], axis=1)
-            # drop colname which was transformed into dummies
-            self.df.drop(columns=colname, inplace=True)
+        if cols:
+            for colname in cols:
+                # get df of dummies from a column, where "prefix_" is name of the column the dummy comes from
+                dummies = pd.get_dummies(self.df[colname]).add_prefix(f"{colname}_")
+                # append dummies to df
+                self.df = pd.concat([self.df, dummies], axis=1)
+                # drop colname which was transformed into dummies
+                self.df.drop(columns=colname, inplace=True)
         return self.df
