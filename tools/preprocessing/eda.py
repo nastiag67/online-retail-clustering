@@ -21,7 +21,6 @@ class Dataset:
         return f"Data transformation class. \
         \n---------------------------\
         \nInputted features: {self.features}. \
-        \nInputted features: {self.features_ohe}. \
         \n---------------------------\
         \nTransformation steps: \
         \n1. Correct data types \
