@@ -1,6 +1,6 @@
 # Contents
 
-__[1. Introduction](#1.-Introduction)__  
+__[1. Introduction](#Introduction)__  
 
 __[2. Exploratory analysis and feature engineering](#2.-Exploratory-analysis-and-feature-engineering)__  
 
