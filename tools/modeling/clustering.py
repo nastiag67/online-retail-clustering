@@ -11,15 +11,16 @@ from sklearn.decomposition import PCA
 
 class Clustering:
     def __init__(self, X):
-        self.X = X
+        self.X = np.array(X)
 
     def show_clusters(self, ypred):
         clusters = np.unique(ypred)
         for cluster in clusters:
             # get row indexes for samples with this cluster
-            row_idx = np.where(ypred == cluster)
-            # create plot of these samples
-            plt.scatter(self.X[row_idx, 0], self.X[row_idx, 1])
+            row_ix = np.where(ypred == cluster)
+            # create scatter of these samples
+            plt.scatter(self.X[row_ix, 0], self.X[row_ix, 1])
+        # show the plot
         plt.show()
 
     def check_model(self, name, model, steps=[], plot=False):
@@ -53,18 +54,4 @@ class Clustering:
             res_model, res_ypred = self.check_model(name, model, steps, plot)
             df_clustered[f"ypred_{name}"] = res_ypred
         return df_clustered
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
