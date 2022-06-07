@@ -2,9 +2,9 @@
 
 __[1. Introduction](#Introduction)__  
 
-__[2. Exploratory analysis and feature engineering](#2.-Exploratory-analysis-and-feature-engineering)__  
+__[2. Exploratory analysis and feature engineering](#Exploratory-analysis-and-feature-engineering)__  
 
-__[3. Model Selection](#3.-Model-Selection)__  
+__[3. Model Selection](#Model-Selection)__  
 
 
 # Introduction
@@ -38,7 +38,7 @@ Clustering is an unsupervised machine learning task, involving discovering group
 - labels can be given to data points - then __correlations of the clusters with the labels__ can be used
     - class labels may not always align with the natural clusters
 
-# 2. Exploratory analysis and feature engineering
+# Exploratory analysis and feature engineering
 
 
 ```python
