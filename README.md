@@ -7,7 +7,7 @@ __[2. Exploratory analysis and feature engineering](#2.-Exploratory-analysis-and
 __[3. Model Selection](#3.-Model-Selection)__  
 
 
-# 1. Introduction
+# Introduction
 
 Clustering is an unsupervised machine learning task, involving discovering groups in data. Clustering helps with pattern discovery. This project aims to use clustering approaches to perform customer segmentation on [Online Retail data](https://www.kaggle.com/datasets/vijayuv/onlineretail).
 
