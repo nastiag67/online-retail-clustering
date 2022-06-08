@@ -1,20 +1,16 @@
 # Contents
 
-__[1. Introduction](#1.-Introduction)__  
+__[1. Introduction](#Introduction)__  
 
-__[2. Exploratory analysis and feature engineering](#2.-Exploratory-analysis-and-feature-engineering)__  
+__[2. Exploratory analysis and feature engineering](#Exploratory-analysis-and-feature-engineering)__  
 
-__[3. Model Selection](#3.-Model-Selection)__  
+__[3. Model Selection](#Model-Selection)__  
 
 
-# 1. Introduction
+# Introduction
 
 Clustering is an unsupervised machine learning task, involving discovering groups in data. Clustering helps with pattern discovery. This project aims to use clustering approaches to perform customer segmentation on [Online Retail data](https://www.kaggle.com/datasets/vijayuv/onlineretail).
 
-### Goals of segmnentation:
-- discovering similar users
-- improving existing models
-- tailor marketing strategy to each customer segment.
 
 ### Use cases:
 - __data summarization__
@@ -37,8 +33,51 @@ Clustering is an unsupervised machine learning task, involving discovering group
     - can be biased (measures could favor different algorithms in a different way)
 - labels can be given to data points - then __correlations of the clusters with the labels__ can be used
     - class labels may not always align with the natural clusters
+    
+    
+### Approach
 
-# 2. Exploratory analysis and feature engineering
+1. Define goals: find users that are similar in important ways to the business (producs, usage, demographics, channels, etc) and:
+    - discover how business metrics differ between them.
+    - use that information to improve existing models.
+    - tailor marketing strategy to each customer segment.
+    
+    
+2. Data:
+    1. Behavioural data (transactions):
+        - visits, usage, penetration responses, engagement, lifestyle, preferences, channel preferences, etc.
+        - number of times a user purchased, how much, what products and categories.
+        - number of transactions over a period of time, number of units.
+    1. Additional data:
+        1. User side:
+            - time between purchases, categories purchased, peaks and valleys of transactions, units and revenue, share of categories, number of units and transactions per user, percentage of discounts per user, top N categories purchased per user.
+        1. Company side:
+            - seasonality variables, featured categories, promotions in place.
+        1. Third party data:
+            - demographics, interests, attitudes, lifestyles.
+    
+
+3. Implement a model:
+    - model should be multivariate, multivariable, probabilistic (e.g. LCA).
+    - run model (e.g. linear regression) for each segment separately, thus taking into account different user profiles.
+
+
+4. Analyse returned segments:
+    - some segments could be price sensitive, prefer one channel, have high penetration of a particular product, prefer a certain way of communication.
+    - we expect to find a segment that is penetrated in one category, but not another.
+    - profiling:
+        - profile - what is shown to managers as a proof that the segments are different: 
+            - KPIs.
+            - indexes (e.g. take each segment's mean and divide by total mean to show how a segment is different from the rest in percentage).
+    - name the segments (e.g. high revenue, low response, etc.)
+    
+    
+5. Act based on learnt information:
+    - e.g. if a segment is price sensitive, users should get a discount to motivate them to make a purchase.
+
+
+
+# Exploratory analysis and feature engineering
 
 
 ```python
