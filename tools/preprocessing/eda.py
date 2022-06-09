@@ -10,7 +10,7 @@ def test():
 
 class Dataset:
     """ """
-    def __init__(self, features, features_ohe):
+    def __init__(self, features, features_ohe=None):
         self.features = features
         self.features_ohe = features_ohe
         self.df = self.get_original()
@@ -35,12 +35,11 @@ class Dataset:
         # 1. Correct data types
         self.df = self._correct_types()
         # 2. One Hot Encoding
-        self.df = self._get_features()
+        if self.features_ohe is not None:
+            self.df = self._get_features()
         return self.df
 
     def _correct_types(self):
-        # df_new = self.df.copy()
-
         self.df['CustomerID'] = self.df['CustomerID'].astype('Int64')
 
         self.df['InvoiceYear'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.year
