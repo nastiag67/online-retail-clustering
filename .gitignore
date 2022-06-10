@@ -8,6 +8,7 @@ requirements_dev.txt
 setup.cfg
 tox.ini
 docs/
+*.csv
 #.gitignore
 
 # Byte-compiled / optimized / DLL files

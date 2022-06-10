@@ -24,8 +24,9 @@ class Dataset:
         \n---------------------------\
         \nTransformation steps: \
         \n1. Correct data types \
-        \n2. One Hot Encoding of {self.features_ohe} \
-        "
+        \n2. Feature engineering: Revenue \
+        \n3. One Hot Encoding of {self.features_ohe} \
+       "
 
     @staticmethod
     def get_original():
@@ -34,19 +35,15 @@ class Dataset:
     def get_transformed(self):
         # 1. Correct data types
         self.df = self._correct_types()
-        # 2. One Hot Encoding
+        # 2. Feature Engineering
+        self.df = self._add_features()
+        # 3. One Hot Encoding
         if self.features_ohe is not None:
             self.df = self._get_features()
         return self.df
 
     def _correct_types(self):
         self.df['CustomerID'] = self.df['CustomerID'].astype('Int64')
-
-        self.df['InvoiceYear'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.year
-        self.df['InvoiceMonth'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.month
-        self.df['InvoiceDay'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.day
-        self.features.remove('InvoiceDate')
-        self.features.extend(['InvoiceYear', 'InvoiceMonth', 'InvoiceDay'])
         return self.df
 
     def _get_features(self):
@@ -78,4 +75,15 @@ class Dataset:
                 self.df = pd.concat([self.df, dummies], axis=1)
                 # drop colname which was transformed into dummies
                 self.df.drop(columns=colname, inplace=True)
+        return self.df
+
+    def _add_features(self):
+        self.df['InvoiceYear'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.year
+        self.df['InvoiceMonth'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.month
+        self.df['InvoiceDay'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.day
+        self.df.drop('InvoiceDate', inplace=True, axis=1)
+        self.features.remove('InvoiceDate')
+        self.features.extend(['InvoiceYear', 'InvoiceMonth', 'InvoiceDay'])
+
+        self.df['Revenue'] = self.df['UnitPrice'] * self.df['Quantity']
         return self.df
