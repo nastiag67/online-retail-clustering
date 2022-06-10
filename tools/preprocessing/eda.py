@@ -14,7 +14,6 @@ class Dataset:
         self.features = features
         self.features_ohe = features_ohe
         self.df = self.get_original()
-        # self.df_transformed = self.get_transformed()
 
     # show this when do `print(instance)`
     def __str__(self):
@@ -37,9 +36,6 @@ class Dataset:
         self.df = self._correct_types()
         # 2. Feature Engineering
         self.df = self._add_features()
-        # 3. One Hot Encoding
-        if self.features_ohe is not None:
-            self.df = self._get_features()
         return self.df
 
     def _correct_types(self):
@@ -86,4 +82,44 @@ class Dataset:
         self.features.extend(['InvoiceYear', 'InvoiceMonth', 'InvoiceDay'])
 
         self.df['Revenue'] = self.df['UnitPrice'] * self.df['Quantity']
+        return self.df
+
+    def get_clustering_df(self):
+        self.df = self.get_profiling_df()
+
+        # 3. One Hot Encoding
+        if self.features_ohe is not None:
+            self.df = self._get_features()
+
+        return self.df
+
+    def get_profiling_df(self):
+        # number of products per customer
+        df_stockCode = pd.DataFrame(self.df.groupby('CustomerID')['StockCode'].count()).rename(
+            columns={'StockCode': '#_stockCode'})
+        # number of invoices per customer
+        df_InvoiceNo = pd.DataFrame(self.df.groupby('CustomerID')['InvoiceNo'].nunique()).rename(
+            columns={'InvoiceNo': '#_InvoiceNo'})
+        # avg quantity of all products per customer
+        df_Q = pd.DataFrame(self.df.groupby('CustomerID')['Quantity'].mean()).rename(columns={'Quantity': 'avg_Q'})
+        # avg P of all products per customer
+        df_P = pd.DataFrame(self.df.groupby('CustomerID')['UnitPrice'].mean()).rename(columns={'UnitPrice': 'avg_P'})
+        # avg Revenue of all products per customer
+        df_Revenue = pd.DataFrame(self.df.groupby('CustomerID')['Revenue'].mean()).rename(
+            columns={'Revenue': 'avg_Revenue'})
+        # month with highest Revenue per customer (month when customer spent most money)
+        df_RevenuePerMonth = pd.DataFrame(
+            self.df.groupby(['CustomerID', 'InvoiceMonth'])['Revenue'].sum()).reset_index().sort_values(['Revenue'],
+                                                                                                    ascending=False)
+        df_HighRevenueMonth = pd.DataFrame(
+            df_RevenuePerMonth[['CustomerID', 'InvoiceMonth']].drop_duplicates(subset='CustomerID',
+                                                                               keep='first')).rename(
+            columns={'InvoiceMonth': 'HighRevenueMonth'})
+
+        self.df = pd.merge(self.df, df_stockCode, how='left', left_on='CustomerID', right_index=True)
+        self.df = pd.merge(self.df, df_InvoiceNo, how='left', left_on='CustomerID', right_index=True)
+        self.df = pd.merge(self.df, df_Q, how='left', left_on='CustomerID', right_index=True)
+        self.df = pd.merge(self.df, df_P, how='left', left_on='CustomerID', right_index=True)
+        self.df = pd.merge(self.df, df_Revenue, how='left', left_on='CustomerID', right_index=True)
+        self.df = pd.merge(self.df, df_HighRevenueMonth, how='left', left_on='CustomerID', right_on='CustomerID')
         return self.df
