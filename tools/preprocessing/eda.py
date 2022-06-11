@@ -31,6 +31,30 @@ class Dataset:
     def get_original():
         return pd.read_csv("../data/OnlineRetail.csv", encoding='unicode_escape')
 
+    @staticmethod
+    def _ohe(df, cols):
+        """Performs One Hot Encoding for features in `cols`.
+
+        Parameters:
+        ----------
+        cols : List
+            List of column names which need to be One-Hot-Encoded.
+
+        Returns
+        -------
+        pd.DataFrame - pd.dataframe with one-hot-encoded features.
+
+        """
+        if cols:
+            for colname in cols:
+                # get df of dummies from a column, where "prefix_" is name of the column the dummy comes from
+                dummies = pd.get_dummies(df[colname]).add_prefix(f"{colname}_")
+                # append dummies to df
+                df = pd.concat([df, dummies], axis=1)
+                # drop colname which was transformed into dummies
+                df.drop(columns=colname, inplace=True)
+        return df
+
     def get_transformed(self):
         # 1. Correct data types
         self.df = self._correct_types()
@@ -58,41 +82,16 @@ class Dataset:
             "`features_ohe` to be OHE must be a part of `features`."
         # subset of df with only necessary features
         df = self.df[self.features]
-        df = self._ohe(self.features_ohe)
+        df = self._ohe(df, self.features_ohe)
         return df
 
     def get_clustering_df(self):
 
-        # self.get_profiling_df()
-
-        # 3. One Hot Encoding
+        # One Hot Encoding
         if self.features_ohe is not None:
             df = self._get_features()
 
         return df
-
-    def _ohe(self, cols):
-        """Performs One Hot Encoding for features in `cols`.
-
-        Parameters:
-        ----------
-        cols : List
-            List of column names which need to be One-Hot-Encoded.
-
-        Returns
-        -------
-        pd.DataFrame - pd.dataframe with one-hot-encoded features.
-
-        """
-        if cols:
-            for colname in cols:
-                # get df of dummies from a column, where "prefix_" is name of the column the dummy comes from
-                dummies = pd.get_dummies(self.df[colname]).add_prefix(f"{colname}_")
-                # append dummies to df
-                self.df = pd.concat([self.df, dummies], axis=1)
-                # drop colname which was transformed into dummies
-                self.df.drop(columns=colname, inplace=True)
-        return self.df
 
     def get_profiling_df(self):
         # number of products per customer
@@ -125,4 +124,6 @@ class Dataset:
         for d in lst_df_profiles:
             df = pd.merge(df, d, how='left', left_on='CustomerID', right_index=True)
 
+        df.index = df.CustomerID
+        df.drop(columns=self.df.columns, inplace=True)
         return df
