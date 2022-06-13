@@ -10,7 +10,10 @@ __[4. Exploratory analysis and feature engineering](#Exploratory-analysis-and-fe
     [4.1. Profiling variables](#Profiling-variables)  
     [4.1. Data transformation and Clustering variables](#Data-transformation-and-Clustering-variables)
 
-__[4. Model Selection](#Model-Selection)__  
+__[5. Model Selection](#Model-Selection)__  
+
+__[6. Analysis](#Analysis)__  
+
 
 
 # Introduction
@@ -82,6 +85,8 @@ Clustering is an unsupervised machine learning task, involving discovering group
     - e.g. if a segment is price sensitive, users should get a discount to motivate them to make a purchase.
 
 
+__[🔼](#Contents)__  
+
 
 # Loading modules and data
 
@@ -127,12 +132,16 @@ print(data)
     3. One Hot Encoding of ['StockCode', 'Country']        
     
 
+__[🔼](#Contents)__  
+
 # Preprocessing
 
 
 ```python
 df0 = data.get_transformed()
 ```
+
+__[🔼](#Contents)__  
 
 # Exploratory analysis and feature engineering
 
@@ -290,6 +299,8 @@ df_profiling
 </div>
 
 
+
+__[🔼](#Contents)__  
 
 ## Data transformation and Clustering variables
 
@@ -952,6 +963,8 @@ df_clustering
 
 
 
+__[🔼](#Contents)__  
+
 # Model Selection
 
 
@@ -1310,6 +1323,8 @@ model_kmeans, ypred_kmeans = clustering.check_model(name, model, steps, plot)
 df_clustering['clusters'] = ypred_kmeans
 df_clustering_res = df_clustering[['CustomerID', 'clusters']].copy()
 ```
+
+__[🔼](#Contents)__  
 
 # Analysis
 
