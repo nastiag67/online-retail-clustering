@@ -2,9 +2,15 @@
 
 __[1. Introduction](#Introduction)__  
 
-__[2. Exploratory analysis and feature engineering](#Exploratory-analysis-and-feature-engineering)__  
+__[2. Loading modules and data](#Loading-modules-and-data)__  
 
-__[3. Model Selection](#Model-Selection)__  
+__[3. Preprocessing](#Preprocessing)__  
+
+__[4. Exploratory analysis and feature engineering](#Exploratory-analysis-and-feature-engineering)__  
+    [4.1. Profiling variables](#Profiling-variables)  
+    [4.1. Data transformation and Clustering variables](#Data-transformation-and-Clustering-variables)
+
+__[4. Model Selection](#Model-Selection)__  
 
 
 # Introduction
@@ -77,7 +83,7 @@ Clustering is an unsupervised machine learning task, involving discovering group
 
 
 
-# Exploratory analysis and feature engineering
+# Loading modules and data
 
 
 ```python
@@ -91,6 +97,8 @@ from sklearn.cluster import SpectralClustering, OPTICS, MeanShift, KMeans, MiniB
 from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+
+import seaborn as sns
 
 ```
 
@@ -115,14 +123,190 @@ print(data)
     ---------------------------        
     Transformation steps:         
     1. Correct data types         
-    2. One Hot Encoding of ['StockCode', 'Country']         
+    2. Feature engineering: Revenue         
+    3. One Hot Encoding of ['StockCode', 'Country']        
     
+
+# Preprocessing
 
 
 ```python
-df1 = data.get_transformed()
-df1 = df1.iloc[:10000, :]
-df1
+df0 = data.get_transformed()
+```
+
+# Exploratory analysis and feature engineering
+
+## Profiling variables
+
+
+
+
+```python
+df_profiling = data.get_profiling_df()
+df_profiling
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>#_stockCode</th>
+      <th>#_InvoiceNo</th>
+      <th>avg_Q</th>
+      <th>avg_P</th>
+      <th>avg_Revenue</th>
+      <th>HighRevenueMonth</th>
+    </tr>
+    <tr>
+      <th>CustomerID</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>17850</th>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>17850</th>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>17850</th>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>17850</th>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>17850</th>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>12680</th>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>12680</th>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>12680</th>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>12680</th>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>12680</th>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>541909 rows × 6 columns</p>
+</div>
+
+
+
+## Data transformation and Clustering variables
+
+These are variables that will be used in clustering algorithm.
+
+The following transformations will be applied to them:
+- Observations with missing values will be dropped.
+- One Hot Encoding will be used to encode categorical variables (`'StockCode', 'Country'`).
+- We will also break down `InvoiceDate` into Year, Month, Day.
+- `Description` will be dropped since strings can't be used in clustering algorithms.
+
+
+
+
+```python
+df_clustering = data.get_clustering_df()
+df_clustering
 ```
 
 
@@ -315,12 +499,12 @@ df1
       <td>...</td>
     </tr>
     <tr>
-      <th>9995</th>
-      <td>2</td>
-      <td>9.95</td>
-      <td>13174</td>
-      <td>2010</td>
-      <td>5</td>
+      <th>541904</th>
+      <td>12</td>
+      <td>0.85</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
       <td>12</td>
       <td>0</td>
       <td>0</td>
@@ -335,16 +519,88 @@ df1
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>1</td>
+      <td>0</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>9996</th>
-      <td>2</td>
+      <th>541905</th>
+      <td>6</td>
+      <td>2.10</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541906</th>
+      <td>4</td>
+      <td>4.15</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541907</th>
+      <td>4</td>
+      <td>4.15</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541908</th>
+      <td>3</td>
       <td>4.95</td>
-      <td>13174</td>
-      <td>2010</td>
-      <td>5</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
       <td>12</td>
       <td>0</td>
       <td>0</td>
@@ -359,99 +615,344 @@ df1
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>1</td>
       <td>0</td>
-    </tr>
-    <tr>
-      <th>9997</th>
-      <td>2</td>
-      <td>4.95</td>
-      <td>13174</td>
-      <td>2010</td>
-      <td>5</td>
-      <td>12</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>9998</th>
-      <td>2</td>
-      <td>2.55</td>
-      <td>13174</td>
-      <td>2010</td>
-      <td>5</td>
-      <td>12</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>9999</th>
-      <td>2</td>
-      <td>4.25</td>
-      <td>13174</td>
-      <td>2010</td>
-      <td>5</td>
-      <td>12</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
       <td>0</td>
     </tr>
   </tbody>
 </table>
-<p>10000 rows × 4114 columns</p>
+<p>541909 rows × 4114 columns</p>
 </div>
 
 
 
 
 ```python
-df1.dropna(inplace=True)
+df_clustering.dropna(inplace=True)
 ```
 
-    C:\Users\nastiag67\Anaconda3\lib\site-packages\pandas\util\_decorators.py:311: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame
-    
-    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      return func(*args, **kwargs)
-    
+
+```python
+# df_clustering = df_clustering.iloc[:10000, :]
+df_clustering
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Quantity</th>
+      <th>UnitPrice</th>
+      <th>CustomerID</th>
+      <th>InvoiceYear</th>
+      <th>InvoiceMonth</th>
+      <th>InvoiceDay</th>
+      <th>StockCode_10002</th>
+      <th>StockCode_10080</th>
+      <th>StockCode_10120</th>
+      <th>StockCode_10123C</th>
+      <th>...</th>
+      <th>Country_RSA</th>
+      <th>Country_Saudi Arabia</th>
+      <th>Country_Singapore</th>
+      <th>Country_Spain</th>
+      <th>Country_Sweden</th>
+      <th>Country_Switzerland</th>
+      <th>Country_USA</th>
+      <th>Country_United Arab Emirates</th>
+      <th>Country_United Kingdom</th>
+      <th>Country_Unspecified</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>6</td>
+      <td>2.55</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>6</td>
+      <td>3.39</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>8</td>
+      <td>2.75</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>6</td>
+      <td>3.39</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>6</td>
+      <td>3.39</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>541904</th>
+      <td>12</td>
+      <td>0.85</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541905</th>
+      <td>6</td>
+      <td>2.10</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541906</th>
+      <td>4</td>
+      <td>4.15</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541907</th>
+      <td>4</td>
+      <td>4.15</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541908</th>
+      <td>3</td>
+      <td>4.95</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>406829 rows × 4114 columns</p>
+</div>
+
+
+
+# Model Selection
 
 
 ```python
@@ -459,13 +960,333 @@ import tools as t
 reload(t)
 from tools.modeling import clustering
 
-clustering = clustering.Clustering(df1)
+clustering = clustering.Clustering(df_clustering)
 ```
 
 
 ```python
+df_clustering
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Quantity</th>
+      <th>UnitPrice</th>
+      <th>CustomerID</th>
+      <th>InvoiceYear</th>
+      <th>InvoiceMonth</th>
+      <th>InvoiceDay</th>
+      <th>StockCode_10002</th>
+      <th>StockCode_10080</th>
+      <th>StockCode_10120</th>
+      <th>StockCode_10123C</th>
+      <th>...</th>
+      <th>Country_RSA</th>
+      <th>Country_Saudi Arabia</th>
+      <th>Country_Singapore</th>
+      <th>Country_Spain</th>
+      <th>Country_Sweden</th>
+      <th>Country_Switzerland</th>
+      <th>Country_USA</th>
+      <th>Country_United Arab Emirates</th>
+      <th>Country_United Kingdom</th>
+      <th>Country_Unspecified</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>6</td>
+      <td>2.55</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>6</td>
+      <td>3.39</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>8</td>
+      <td>2.75</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>6</td>
+      <td>3.39</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>6</td>
+      <td>3.39</td>
+      <td>17850</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>541904</th>
+      <td>12</td>
+      <td>0.85</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541905</th>
+      <td>6</td>
+      <td>2.10</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541906</th>
+      <td>4</td>
+      <td>4.15</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541907</th>
+      <td>4</td>
+      <td>4.15</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>541908</th>
+      <td>3</td>
+      <td>4.95</td>
+      <td>12680</td>
+      <td>2011</td>
+      <td>9</td>
+      <td>12</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>406829 rows × 4114 columns</p>
+</div>
+
+
+
+
+```python
 name = 'Kmeans'
-# from sklearn.cluster import KMeans
 model = KMeans(n_clusters=3, random_state=42)
 steps = [
 #     ('scaler', StandardScaler())
@@ -480,13 +1301,201 @@ model_kmeans, ypred_kmeans = clustering.check_model(name, model, steps, plot)
 
 
     
-![png](README_files/README_8_1.png)
+![png](README_files/README_16_1.png)
     
 
 
-# TEST
+
+```python
+df_clustering['clusters'] = ypred_kmeans
+df_clustering_res = df_clustering[['CustomerID', 'clusters']].copy()
+```
+
+# Analysis
 
 
 ```python
+df_res = pd.merge(df_clustering_res, df_profiling.drop_duplicates(), how='left', left_on='CustomerID', right_index=True)
+df_res
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>CustomerID</th>
+      <th>clusters</th>
+      <th>#_stockCode</th>
+      <th>#_InvoiceNo</th>
+      <th>avg_Q</th>
+      <th>avg_P</th>
+      <th>avg_Revenue</th>
+      <th>HighRevenueMonth</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>17850</td>
+      <td>1</td>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>17850</td>
+      <td>1</td>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>17850</td>
+      <td>1</td>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>17850</td>
+      <td>1</td>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>17850</td>
+      <td>1</td>
+      <td>312.0</td>
+      <td>35.0</td>
+      <td>5.426282</td>
+      <td>3.924712</td>
+      <td>16.950737</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>541904</th>
+      <td>12680</td>
+      <td>0</td>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>541905</th>
+      <td>12680</td>
+      <td>0</td>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>541906</th>
+      <td>12680</td>
+      <td>0</td>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>541907</th>
+      <td>12680</td>
+      <td>0</td>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>541908</th>
+      <td>12680</td>
+      <td>0</td>
+      <td>52.0</td>
+      <td>4.0</td>
+      <td>8.519231</td>
+      <td>3.637885</td>
+      <td>16.592500</td>
+      <td>9.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>406829 rows × 8 columns</p>
+</div>
+
+
+
+
+```python
+sns.pairplot(df_res[['clusters', 'avg_Revenue', 'HighRevenueMonth', '#_InvoiceNo', '#_stockCode', 'avg_Q', 'avg_P']], 
+             hue="clusters",
+            palette=sns.color_palette("hls", 3))
 
 ```
+
+
+
+
+    <seaborn.axisgrid.PairGrid at 0x2212f18a490>
+
+
+
+
+    
+![png](README_files/README_20_1.png)
+    
+
