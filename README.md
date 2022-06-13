@@ -6,9 +6,9 @@ __[2. Loading modules and data](#Loading-modules-and-data)__
 
 __[3. Preprocessing](#Preprocessing)__
 
-__[4. Exploratory analysis and feature engineering](#Exploratory-analysis-and-feature-engineering)__
-    [4.1. Profiling variables](#Profiling-variables)
-    [4.1. Data transformation and Clustering variables](#Data-transformation-and-Clustering-variables)
+__[4. Exploratory analysis and feature engineering](#Exploratory-analysis-and-feature-engineering)__  
+    [4.1. Profiling variables](#Profiling-variables)  
+    [4.1. Data transformation and Clustering variables](#Data-transformation-and-Clustering-variables)  
 
 __[5. Model Selection](#Model-Selection)__
 
