@@ -1,6 +1,8 @@
 from datetime import datetime
 import pandas as pd
-import numpy as np
+from typing import Dict, Union, List, Tuple, Optional, NoReturn
+import logging
+import sys
 
 
 def test():
@@ -10,7 +12,7 @@ def test():
 
 class Dataset:
     """ """
-    def __init__(self, features, features_ohe=None):
+    def __init__(self, features: List[str], features_ohe: Optional[List[str]] = None):
         self.features = features
         self.features_ohe = features_ohe
         self.df = self.get_original()
@@ -32,7 +34,7 @@ class Dataset:
         return pd.read_csv("../data/OnlineRetail.csv", encoding='unicode_escape')
 
     @staticmethod
-    def _ohe(df, cols):
+    def _ohe(df: pd.DataFrame, cols: List[str]) -> pd.DataFrame:
         """Performs One Hot Encoding for features in `cols`.
 
         Parameters:
@@ -55,18 +57,18 @@ class Dataset:
                 df.drop(columns=colname, inplace=True)
         return df
 
-    def get_transformed(self):
+    def get_transformed(self) -> pd.DataFrame:
         # 1. Correct data types
         self.df = self._correct_types()
         # 2. Add engineered features
         self.df = self._add_features()
         return self.df
 
-    def _correct_types(self):
+    def _correct_types(self) -> pd.DataFrame:
         self.df['CustomerID'] = self.df['CustomerID'].astype('Int64')
         return self.df
 
-    def _add_features(self):
+    def _add_features(self) -> pd.DataFrame:
         self.df['InvoiceYear'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.year
         self.df['InvoiceMonth'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.month
         self.df['InvoiceDay'] = pd.to_datetime(self.df['InvoiceDate'], errors='coerce').dt.day
@@ -77,7 +79,7 @@ class Dataset:
         self.df['Revenue'] = self.df['UnitPrice'] * self.df['Quantity']
         return self.df
 
-    def _get_features(self):
+    def _get_features(self) -> pd.DataFrame:
         assert set(self.features_ohe).issubset(set(self.features)), \
             "`features_ohe` to be OHE must be a part of `features`."
         # subset of df with only necessary features
@@ -85,7 +87,7 @@ class Dataset:
         df = self._ohe(df, self.features_ohe)
         return df
 
-    def get_clustering_df(self):
+    def get_clustering_df(self) -> pd.DataFrame:
 
         # One Hot Encoding
         if self.features_ohe is not None:
@@ -93,7 +95,7 @@ class Dataset:
 
         return df
 
-    def get_profiling_df(self):
+    def get_profiling_df(self) -> pd.DataFrame:
         # number of products per customer
         df_stockCode = pd.DataFrame(self.df.groupby('CustomerID')['StockCode'].count()) \
             .rename(columns={'StockCode': '#_stockCode'})
