@@ -1,6 +1,5 @@
 # Contents
 
-
 __[1. Introduction](#Introduction)__
 
 __[2. Loading modules and data](#Loading-modules-and-data)__
