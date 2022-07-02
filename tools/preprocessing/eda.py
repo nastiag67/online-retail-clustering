@@ -93,6 +93,7 @@ class Dataset:
         if self.features_ohe is not None:
             df = self._get_features()
 
+        df.set_index('CustomerID', inplace=True)
         return df
 
     def get_profiling_df(self) -> pd.DataFrame:
@@ -128,4 +129,5 @@ class Dataset:
 
         df.index = df.CustomerID
         df.drop(columns=self.df.columns, inplace=True)
+        df.drop_duplicates(inplace=True)
         return df
