@@ -20,7 +20,6 @@ __[6. Analysis](#Analysis)__
 
 Clustering is an unsupervised machine learning task, involving discovering groups in data. Clustering helps with pattern discovery. This project aims to use clustering approaches to perform customer segmentation on [Online Retail data](https://www.kaggle.com/datasets/vijayuv/onlineretail).
 
-
 ### Use cases:
 - __data summarization__
     - clustering is a step for classification or outlier analysis
